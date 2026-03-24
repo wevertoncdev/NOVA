@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOVA — Moda Masculina</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0d0a;
+    --cream: #f5f0e8;
+    --gold: #c9a96e;
+    --gold-light: #e8d5b0;
+    --blush: #e8c4b8;
+    --sage: #8a9e8c;
+    --white: #fefcf9;
+    --gray: #7a7570;
+    --border: rgba(15,13,10,0.1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--ink);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor {
+    position: fixed; width: 10px; height: 10px;
+    background: var(--gold); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: multiply;
+  }
+  .cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1.5px solid var(--gold); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transition: all 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+    mix-blend-mode: multiply;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 60px;
+    background: rgba(254,252,249,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: padding 0.3s ease;
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 900;
+    color: var(--ink); text-decoration: none;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--ink); text-decoration: none; font-weight: 500;
+    position: relative; padding-bottom: 2px;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 0; height: 1px; background: var(--gold);
+    transition: width 0.3s ease;
+  }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-actions { display: flex; align-items: center; gap: 24px; }
+  .nav-icon { background: none; border: none; font-size: 18px; cursor: none; color: var(--ink); position: relative; }
+  .badge {
+    position: absolute; top: -6px; right: -8px;
+    background: var(--gold); color: white;
+    font-size: 9px; width: 16px; height: 16px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    padding-top: 90px; overflow: hidden;
+  }
+  .hero-left {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 80px 60px; z-index: 2;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gold); font-weight: 500; margin-bottom: 32px;
+  }
+  .hero-tag::before { content: ''; width: 28px; height: 1px; background: var(--gold); }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(48px, 5.5vw, 82px);
+    line-height: 1.02; font-weight: 900; margin-bottom: 28px;
+  }
+  .hero-title em { font-style: italic; color: var(--gold); }
+  .hero-desc {
+    font-size: 16px; line-height: 1.8; color: var(--gray);
+    max-width: 380px; margin-bottom: 48px; font-weight: 300;
+  }
+  .hero-ctas { display: flex; gap: 16px; align-items: center; }
+  .btn-primary {
+    background: var(--ink); color: var(--cream);
+    padding: 16px 36px; font-size: 12px; letter-spacing: 2px;
+    text-transform: uppercase; font-weight: 500;
+    border: none; cursor: none; text-decoration: none;
+    display: inline-block; position: relative; overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  .btn-primary::before {
+    content: ''; position: absolute; top: 0; left: -100%;
+    width: 100%; height: 100%; background: var(--gold);
+    transition: left 0.4s ease; z-index: 0;
+  }
+  .btn-primary:hover::before { left: 0; }
+  .btn-primary span { position: relative; z-index: 1; }
+  .btn-ghost {
+    color: var(--ink); font-size: 12px; letter-spacing: 1.5px;
+    text-transform: uppercase; font-weight: 500;
+    text-decoration: none; display: flex; align-items: center; gap: 8px;
+    transition: gap 0.3s ease;
+  }
+  .btn-ghost:hover { gap: 16px; }
+  .hero-stats {
+    display: flex; gap: 40px; margin-top: 60px;
+    padding-top: 40px; border-top: 1px solid var(--border);
+  }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: var(--ink); }
+  .stat-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray); margin-top: 4px; }
+
+  .hero-right { position: relative; overflow: hidden; background: #1a1612; }
+  .hero-main-img {
+    width: 100%; height: 100%; object-fit: cover; object-position: center top;
+    display: block; transition: transform 0.8s ease;
+  }
+  .hero-right:hover .hero-main-img { transform: scale(1.03); }
+  .hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(15,13,10,0.55) 0%, transparent 55%);
+  }
+  .hero-card {
+    position: absolute; bottom: 40px; left: -20px;
+    background: var(--white); padding: 20px 24px;
+    box-shadow: 0 20px 60px rgba(15,13,10,0.18);
+    z-index: 10; width: 220px;
+    animation: floatCard 4s ease-in-out infinite;
+  }
+  @keyframes floatCard { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  .hero-card-tag { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+  .hero-card-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .hero-card-price { font-size: 18px; font-weight: 500; color: var(--gold); font-family: 'Playfair Display', serif; }
+  .hero-card-price s { font-size: 12px; color: var(--gray); margin-left: 8px; font-family: 'DM Sans', sans-serif; font-weight: 300; }
+
+  /* MARQUEE */
+  .marquee-wrap { background: var(--ink); padding: 18px 0; overflow: hidden; }
+  .marquee { display: flex; animation: marquee 22s linear infinite; }
+  @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  .marquee-item { white-space: nowrap; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); padding: 0 32px; font-weight: 500; }
+
+  /* SECTIONS */
+  .section { padding: 100px 60px; }
+  .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 56px; }
+  .section-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; font-weight: 500; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(30px, 4vw, 50px); font-weight: 700; line-height: 1.1; }
+  .section-link {
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--ink); text-decoration: none; font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid var(--ink); padding-bottom: 2px;
+    transition: gap 0.3s; white-space: nowrap;
+  }
+  .section-link:hover { gap: 16px; }
+
+  /* CATEGORIES */
+  .categories-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 360px 200px;
+    gap: 10px;
+  }
+  .cat-card { position: relative; overflow: hidden; cursor: none; }
+  .cat-card:nth-child(1) { grid-row: 1 / 3; }
+  .cat-img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; transition: transform 0.6s ease; }
+  .cat-card:hover .cat-img { transform: scale(1.06); }
+  .cat-info {
+    position: absolute; bottom: 0; left: 0; right: 0; padding: 28px;
+    background: linear-gradient(to top, rgba(15,13,10,0.72) 0%, transparent 100%);
+    color: white;
+  }
+  .cat-name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .cat-count { font-size: 12px; letter-spacing: 1px; opacity: 0.7; }
+  .cat-arrow {
+    position: absolute; top: 20px; right: 20px;
+    width: 36px; height: 36px; background: rgba(255,255,255,0.18); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: white;
+    opacity: 0; transform: rotate(-45deg); transition: all 0.3s ease;
+  }
+  .cat-card:hover .cat-arrow { opacity: 1; transform: rotate(0deg); }
+
+  /* PRODUCTS */
+  .products-section { background: var(--cream); padding: 100px 60px; }
+  .products-tabs { display: flex; gap: 8px; margin-bottom: 48px; }
+  .tab {
+    padding: 10px 24px; font-size: 12px; letter-spacing: 1.5px;
+    text-transform: uppercase; font-weight: 500;
+    background: none; border: 1px solid var(--border);
+    cursor: none; transition: all 0.3s ease; color: var(--gray);
+  }
+  .tab.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .tab:hover:not(.active) { border-color: var(--gold); color: var(--gold); }
+
+  .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .product-card { background: var(--white); cursor: none; transition: transform 0.3s ease; }
+  .product-card:hover { transform: translateY(-6px); }
+  .product-img { aspect-ratio: 3/4; position: relative; overflow: hidden; }
+  .product-photo {
+    width: 100%; height: 100%; object-fit: cover; object-position: center top;
+    display: block; transition: transform 0.5s ease;
+  }
+  .product-card:hover .product-photo { transform: scale(1.05); }
+  .product-badge {
+    position: absolute; top: 14px; left: 14px;
+    padding: 4px 10px; font-size: 9px; letter-spacing: 2px;
+    text-transform: uppercase; font-weight: 600;
+  }
+  .badge-new { background: var(--ink); color: white; }
+  .badge-sale { background: var(--blush); color: var(--ink); }
+  .badge-hot { background: var(--gold); color: white; }
+  .product-actions {
+    position: absolute; bottom: 14px; left: 14px; right: 14px;
+    display: flex; gap: 8px; transform: translateY(16px); opacity: 0; transition: all 0.3s ease;
+  }
+  .product-card:hover .product-actions { transform: translateY(0); opacity: 1; }
+  .btn-cart {
+    flex: 1; padding: 12px; background: var(--ink); color: white;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 500; border: none; cursor: none; transition: background 0.3s;
+  }
+  .btn-cart:hover { background: var(--gold); }
+  .btn-wish {
+    width: 44px; height: 44px; background: var(--white); color: var(--ink);
+    border: none; cursor: none; font-size: 16px;
+    display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+  }
+  .btn-wish:hover { background: var(--blush); }
+  .product-info { padding: 20px; }
+  .product-brand { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; font-weight: 500; }
+  .product-name { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; margin-bottom: 8px; line-height: 1.3; }
+  .product-rating { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+  .stars { color: var(--gold); font-size: 11px; letter-spacing: 2px; }
+  .rating-count { font-size: 11px; color: var(--gray); }
+  .product-price { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .price-now { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--ink); font-weight: 700; }
+  .price-was { font-size: 13px; color: var(--gray); text-decoration: line-through; font-weight: 300; }
+  .price-off { font-size: 10px; color: var(--sage); font-weight: 600; letter-spacing: 1px; background: rgba(138,158,140,0.15); padding: 2px 6px; }
+
+  /* LOOKBOOK */
+  .lookbook {
+    display: grid; grid-template-columns: 1fr 1fr;
+    min-height: 540px; margin: 0 60px 100px; overflow: hidden;
+  }
+  .lookbook-imgs {
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px;
+  }
+  .lookbook-img { overflow: hidden; position: relative; }
+  .lookbook-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s ease; }
+  .lookbook-img:hover img { transform: scale(1.06); }
+  .lookbook-img:first-child { grid-row: 1/3; }
+  .lookbook-content {
+    background: var(--ink); padding: 64px 56px;
+    display: flex; flex-direction: column; justify-content: center; color: var(--cream);
+  }
+  .lookbook-tag { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+  .lookbook-title { font-family: 'Playfair Display', serif; font-size: clamp(32px, 3vw, 48px); font-weight: 700; line-height: 1.1; margin-bottom: 20px; }
+  .lookbook-desc { font-size: 15px; line-height: 1.8; color: rgba(245,240,232,0.6); font-weight: 300; margin-bottom: 36px; }
+  .btn-light {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 500; color: white; text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 4px;
+    width: fit-content; transition: all 0.3s ease;
+  }
+  .btn-light:hover { gap: 18px; border-color: var(--gold); color: var(--gold); }
+
+  /* TESTIMONIALS */
+  .testimonials { padding: 100px 60px; background: var(--ink); color: var(--cream); }
+  .testimonials .section-label { color: var(--gold-light); }
+  .testimonials .section-title { color: var(--cream); }
+  .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 56px; }
+  .testimonial-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 36px; }
+  .t-quote { font-family: 'Playfair Display', serif; font-size: 72px; color: var(--gold); line-height: 0.6; margin-bottom: 20px; opacity: 0.4; }
+  .t-text { font-size: 15px; line-height: 1.8; color: rgba(245,240,232,0.7); margin-bottom: 28px; font-weight: 300; }
+  .t-author { display: flex; align-items: center; gap: 14px; }
+  .t-avatar { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
+  .t-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .t-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; color: var(--cream); }
+  .t-role { font-size: 11px; color: rgba(245,240,232,0.35); margin-top: 2px; }
+  .t-stars { color: var(--gold); font-size: 12px; margin-bottom: 4px; }
+
+  /* NEWSLETTER */
+  .newsletter { padding: 100px 60px; text-align: center; background: var(--cream); position: relative; overflow: hidden; }
+  .newsletter::before {
+    content: 'NOVA'; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Playfair Display', serif; font-size: 260px; font-weight: 900;
+    color: rgba(201,169,110,0.07); white-space: nowrap; letter-spacing: -10px; pointer-events: none;
+  }
+  .newsletter-content { position: relative; z-index: 1; }
+  .newsletter .section-label { display: block; margin-bottom: 16px; }
+  .newsletter .section-title { margin-bottom: 16px; }
+  .newsletter-desc { font-size: 15px; color: var(--gray); max-width: 440px; margin: 0 auto 48px; line-height: 1.8; font-weight: 300; }
+  .newsletter-form { display: flex; max-width: 480px; margin: 0 auto; }
+  .newsletter-input {
+    flex: 1; padding: 16px 24px; font-size: 14px; font-family: 'DM Sans', sans-serif;
+    border: 1px solid var(--border); border-right: none;
+    background: var(--white); outline: none; color: var(--ink); transition: border-color 0.3s;
+  }
+  .newsletter-input:focus { border-color: var(--gold); }
+  .newsletter-input::placeholder { color: var(--gray); font-weight: 300; }
+  .newsletter-submit {
+    padding: 16px 32px; background: var(--ink); color: var(--cream);
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500;
+    border: 1px solid var(--ink); cursor: none; transition: all 0.3s;
+  }
+  .newsletter-submit:hover { background: var(--gold); border-color: var(--gold); }
+
+  /* FOOTER */
+  footer { background: var(--ink); color: var(--cream); padding: 80px 60px 40px; }
+  .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 60px; }
+  .footer-brand .nav-logo { display: block; margin-bottom: 20px; color: var(--cream); }
+  .footer-brand p { font-size: 14px; line-height: 1.8; color: rgba(245,240,232,0.45); max-width: 260px; font-weight: 300; }
+  .footer-social { display: flex; gap: 12px; margin-top: 28px; }
+  .social-btn {
+    width: 38px; height: 38px; border: 1px solid rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: var(--cream); text-decoration: none; transition: all 0.3s; font-weight: 600;
+  }
+  .social-btn:hover { background: var(--gold); border-color: var(--gold); }
+  .footer-col h4 { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); font-weight: 500; margin-bottom: 20px; }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .footer-links a { font-size: 14px; color: rgba(245,240,232,0.45); text-decoration: none; font-weight: 300; transition: color 0.3s; }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 32px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-copy { font-size: 12px; color: rgba(245,240,232,0.3); }
+  .footer-pay { display: flex; gap: 8px; }
+  .pay-badge { padding: 4px 10px; background: rgba(255,255,255,0.07); font-size: 10px; letter-spacing: 1px; color: rgba(245,240,232,0.35); font-weight: 500; }
+
+  /* REVEAL */
+  .reveal { opacity: 0; transform: translateY(28px); transition: all 0.7s cubic-bezier(0.25,0.46,0.45,0.94); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar-thumb { background: var(--gold); }
+
+  @media (max-width: 1100px) {
+    nav { padding: 18px 28px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { min-height: 60vw; }
+    .section, .products-section, .testimonials, .newsletter { padding: 70px 28px; }
+    .products-grid { grid-template-columns: repeat(2, 1fr); }
+    .categories-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 280px 180px; }
+    .cat-card:nth-child(1) { grid-column: 1/3; height: 280px; }
+    .lookbook { grid-template-columns: 1fr; margin: 0 28px 70px; }
+    .lookbook-imgs { min-height: 320px; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">NO<span>VA</span></a>
+  <ul class="nav-links">
+    <li><a href="#">Coleções</a></li>
+    <li><a href="#">Novidades</a></li>
+    <li><a href="#">Promoções</a></li>
+    <li><a href="#">Lookbook</a></li>
+    <li><a href="#">Sobre</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="nav-icon">🔍</button>
+    <button class="nav-icon">♡</button>
+    <button class="nav-icon">🛍<span class="badge">3</span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Coleção Outono 2025</div>
+    <h1 class="hero-title">Vista o homem<br>que você <em>quer</em><br>ser.</h1>
+    <p class="hero-desc">Moda masculina com caráter. Peças que combinam estilo, conforto e sofisticação para o homem moderno.</p>
+    <div class="hero-ctas">
+      <a href="#" class="btn-primary"><span>Explorar Coleção</span></a>
+      <a href="#" class="btn-ghost">Ver Lookbook →</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-num">12K+</div><div class="stat-label">Clientes felizes</div></div>
+      <div><div class="stat-num">340+</div><div class="stat-label">Produtos únicos</div></div>
+      <div><div class="stat-num">4.9★</div><div class="stat-label">Avaliação média</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <img class="hero-main-img"
+      src="https://images.unsplash.com/photo-1617137968427-85924c800a22?w=900&q=80&fit=crop&crop=top"
+      alt="Moda masculina editorial" loading="eager"/>
+    <div class="hero-overlay"></div>
+    <div class="hero-card">
+      <div class="hero-card-tag">🔥 Mais Vendido</div>
+      <div class="hero-card-name">Blazer Atemporal</div>
+      <div class="hero-card-price">R$ 389 <s>R$ 580</s></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee">
+    <span class="marquee-item">Frete Grátis acima de R$299</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Troca Fácil em 30 dias</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Nova Coleção Masculina</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Parcelamento em 10x sem juros</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Frete Grátis acima de R$299</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Troca Fácil em 30 dias</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Nova Coleção Masculina</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Parcelamento em 10x sem juros</span>
+    <span class="marquee-item">✦</span>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="section">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-label">Descubra</div>
+      <h2 class="section-title">Compre por<br>Categoria</h2>
+    </div>
+    <a href="#" class="section-link">Ver Todas →</a>
+  </div>
+  <div class="categories-grid">
+    <div class="cat-card reveal">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=700&q=80&fit=crop&crop=top" alt="Casual">
+      <div class="cat-info"><div class="cat-name">Casual</div><div class="cat-count">148 produtos</div></div>
+      <div class="cat-arrow">↗</div>
+    </div>
+    <div class="cat-card reveal reveal-delay-1">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1543132220-3ec99c6094dc?w=500&q=80&fit=crop&crop=top" alt="Social">
+      <div class="cat-info"><div class="cat-name">Social</div><div class="cat-count">96 produtos</div></div>
+      <div class="cat-arrow">↗</div>
+    </div>
+    <div class="cat-card reveal reveal-delay-2">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=500&q=80&fit=crop&crop=top" alt="Streetwear">
+      <div class="cat-info"><div class="cat-name">Streetwear</div><div class="cat-count">64 produtos</div></div>
+      <div class="cat-arrow">↗</div>
+    </div>
+    <div class="cat-card reveal reveal-delay-3">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=500&q=80&fit=crop" alt="Acessórios">
+      <div class="cat-info"><div class="cat-name">Acessórios</div><div class="cat-count">52 produtos</div></div>
+      <div class="cat-arrow">↗</div>
+    </div>
+    <div class="cat-card reveal reveal-delay-4">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1490114538077-0a7f8cb49891?w=500&q=80&fit=crop&crop=top" alt="Edição Limitada">
+      <div class="cat-info"><div class="cat-name">Edição Limitada</div><div class="cat-count">18 produtos</div></div>
+      <div class="cat-arrow">↗</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="products-section">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-label">Curadoria</div>
+      <h2 class="section-title">Mais Desejados</h2>
+    </div>
+    <a href="#" class="section-link">Ver Todos →</a>
+  </div>
+  <div class="products-tabs reveal">
+    <button class="tab active">Todos</button>
+    <button class="tab">Blazers</button>
+    <button class="tab">Calças</button>
+    <button class="tab">Camisas</button>
+    <button class="tab">Promoções</button>
+  </div>
+  <div class="products-grid">
+    <div class="product-card reveal">
+      <div class="product-img">
+        <img class="product-photo" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&q=80&fit=crop&crop=top" alt="Blazer">
+        <div class="product-badge badge-new">Novo</div>
+        <div class="product-actions">
+          <button class="btn-cart">+ Carrinho</button>
+          <button class="btn-wish">♡</button>
+        </div>
+      </div>
+      <div class="product-info">
+        <div class="product-brand">Coleção Outono</div>
+        <div class="product-name">Blazer Caramelo Slim</div>
+        <div class="product-rating"><span class="stars">★★★★★</span><span class="rating-count">(124)</span></div>
+        <div class="product-price">
+          <span class="price-now">R$ 389</span>
+          <span class="price-was">R$ 580</span>
+          <span class="price-off">-33%</span>
+        </div>
+      </div>
+    </div>
+    <div class="product-card reveal reveal-delay-1">
+      <div class="product-img">
+        <img class="product-photo" src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500&q=80&fit=crop&crop=top" alt="Camisa">
+        <div class="product-badge badge-hot">🔥 Hot</div>
+        <div class="product-actions">
+          <button class="btn-cart">+ Carrinho</button>
+          <button class="btn-wish">♡</button>
+        </div>
+      </div>
+      <div class="product-info">
+        <div class="product-brand">Lifestyle</div>
+        <div class="product-name">Camisa Linho Premium</div>
+        <div class="product-rating"><span class="stars">★★★★★</span><span class="rating-count">(89)</span></div>
+        <div class="product-price">
+          <span class="price-now">R$ 247</span>
+        </div>
+      </div>
+    </div>
+    <div class="product-card reveal reveal-delay-2">
+      <div class="product-img">
+        <img class="product-photo" src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&q=80&fit=crop&crop=top" alt="Calça">
+        <div class="product-badge badge-sale">Sale</div>
+        <div class="product-actions">
+          <button class="btn-cart">+ Carrinho</button>
+          <button class="btn-wish">♡</button>
+        </div>
+      </div>
+      <div class="product-info">
+        <div class="product-brand">Essentials</div>
+        <div class="product-name">Calça Chino Caramelo</div>
+        <div class="product-rating"><span class="stars">★★★★☆</span><span class="rating-count">(211)</span></div>
+        <div class="product-price">
+          <span class="price-now">R$ 198</span>
+          <span class="price-was">R$ 340</span>
+          <span class="price-off">-42%</span>
+        </div>
+      </div>
+    </div>
+    <div class="product-card reveal reveal-delay-3">
+      <div class="product-img">
+        <img class="product-photo" src="https://images.unsplash.com/photo-1488161628813-04466f872be2?w=500&q=80&fit=crop&crop=top" alt="Casaco">
+        <div class="product-badge badge-new">Novo</div>
+        <div class="product-actions">
+          <button class="btn-cart">+ Carrinho</button>
+          <button class="btn-wish">♡</button>
+        </div>
+      </div>
+      <div class="product-info">
+        <div class="product-brand">Outerwear</div>
+        <div class="product-name">Trench Coat Clássico</div>
+        <div class="product-rating"><span class="stars">★★★★★</span><span class="rating-count">(67)</span></div>
+        <div class="product-price">
+          <span class="price-now">R$ 549</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOOKBOOK -->
+<div class="lookbook reveal">
+  <div class="lookbook-imgs">
+    <div class="lookbook-img">
+      <img src="https://images.unsplash.com/photo-1550246140-29f40b909e5a?w=600&q=80&fit=crop&crop=top" alt="Look 1">
+    </div>
+    <div class="lookbook-img">
+      <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&q=80&fit=crop" alt="Tênis">
+    </div>
+    <div class="lookbook-img">
+      <img src="https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=400&q=80&fit=crop&crop=top" alt="Look 3">
+    </div>
+  </div>
+  <div class="lookbook-content">
+    <div class="lookbook-tag">✦ Lookbook Outono 2025</div>
+    <h3 class="lookbook-title">Coleção<br><em style="font-style:italic;color:var(--gold)">Noite Dourada</em></h3>
+    <p class="lookbook-desc">Peças que transcendem tendências. Um guarda-roupa cuidadosamente curado para o homem que sabe o que quer.</p>
+    <a href="#" class="btn-light">Ver Lookbook Completo →</a>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-label">Depoimentos</div>
+      <h2 class="section-title" style="color:var(--cream)">O que nossos<br>clientes dizem</h2>
+    </div>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <div class="t-quote">"</div>
+      <div class="t-stars">★★★★★</div>
+      <p class="t-text">Qualidade incrível e entrega super rápida. As peças são exatamente como nas fotos, o tecido é impecável. Já fiz minha terceira compra!</p>
+      <div class="t-author">
+        <div class="t-avatar"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80&fit=crop&crop=face" alt="Rafael"></div>
+        <div><div class="t-name">Rafael Souza</div><div class="t-role">Cliente desde 2023 · São Paulo</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-1">
+      <div class="t-quote">"</div>
+      <div class="t-stars">★★★★★</div>
+      <p class="t-text">O blazer caramelo é simplesmente perfeito. Caimento impecável, recebi vários elogios no trabalho. Atendimento rápido e eficiente.</p>
+      <div class="t-author">
+        <div class="t-avatar"><img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80&fit=crop&crop=face" alt="Lucas"></div>
+        <div><div class="t-name">Lucas Mendes</div><div class="t-role">Cliente desde 2024 · Belo Horizonte</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-2">
+      <div class="t-quote">"</div>
+      <div class="t-stars">★★★★★</div>
+      <p class="t-text">Finalmente uma marca masculina que une estilo real e qualidade. O trench coat superou minhas expectativas. Recomendo demais!</p>
+      <div class="t-author">
+        <div class="t-avatar"><img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&q=80&fit=crop&crop=face" alt="Carlos"></div>
+        <div><div class="t-name">Carlos Andrade</div><div class="t-role">Cliente desde 2023 · Fortaleza</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter">
+  <div class="newsletter-content reveal">
+    <span class="section-label">Fique por dentro</span>
+    <h2 class="section-title">Receba em primeira mão</h2>
+    <p class="newsletter-desc">Assine nossa newsletter e seja o primeiro a saber sobre novas coleções, promoções exclusivas e dicas de estilo masculino.</p>
+    <div class="newsletter-form">
+      <input type="email" class="newsletter-input" placeholder="seu@email.com">
+      <button class="newsletter-submit">Assinar</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="#" class="nav-logo">NO<span style="color:var(--gold)">VA</span></a>
+      <p>Moda masculina com propósito. Feito com cuidado, pensado com intenção, para o homem de hoje.</p>
+      <div class="footer-social">
+        <a href="#" class="social-btn">in</a>
+        <a href="#" class="social-btn">ig</a>
+        <a href="#" class="social-btn">tt</a>
+        <a href="#" class="social-btn">yt</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Comprar</h4>
+      <ul class="footer-links">
+        <li><a href="#">Blazers & Ternos</a></li>
+        <li><a href="#">Camisas</a></li>
+        <li><a href="#">Calças</a></li>
+        <li><a href="#">Acessórios</a></li>
+        <li><a href="#">Sale</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Empresa</h4>
+      <ul class="footer-links">
+        <li><a href="#">Sobre Nós</a></li>
+        <li><a href="#">Sustentabilidade</a></li>
+        <li><a href="#">Carreiras</a></li>
+        <li><a href="#">Imprensa</a></li>
+        <li><a href="#">Blog</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Ajuda</h4>
+      <ul class="footer-links">
+        <li><a href="#">Rastrear Pedido</a></li>
+        <li><a href="#">Trocas e Devoluções</a></li>
+        <li><a href="#">Guia de Medidas</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Contato</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 NOVA Moda Masculina. Todos os direitos reservados.</span>
+    <div class="footer-pay">
+      <span class="pay-badge">PIX</span>
+      <span class="pay-badge">VISA</span>
+      <span class="pay-badge">MASTER</span>
+      <span class="pay-badge">BOLETO</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx - 5 + 'px';
+    cursor.style.top = my - 5 + 'px';
+  });
+  (function animateRing() {
+    rx += (mx - rx - 18) * 0.12;
+    ry += (my - ry - 18) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  })();
+  document.querySelectorAll('a, button, .cat-card, .product-card, .tab, .lookbook-img').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2.5)'; ring.style.transform = 'scale(1.4)'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; ring.style.transform = 'scale(1)'; });
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // Nav shrink
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.style.padding = window.scrollY > 50 ? '14px 60px' : '24px 60px';
+  });
+</script>
+</body>
+</html>
